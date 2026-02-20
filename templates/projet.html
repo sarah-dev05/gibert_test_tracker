@@ -70,28 +70,30 @@
 
     {% for module in projet.modules %}
     <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="d-flex justify-content-between align-items-center">
-                {{ module.nom }}
-                <span>
-                    <a href="{{ url_for('supprimer_module', module_id=module.id) }}"
-                       class="btn btn-danger btn-sm"
-                       onclick="return confirm('Supprimer ce module ?');">
-                        Supprimer
-                    </a>
-                </span>
-            </h5>
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>{{ module.nom }}</h5>
+            <span>
+                <a href="{{ url_for('modifier_module', module_id=module.id) }}" class="btn btn-warning btn-sm">
+                    Modifier
+                </a>
+                <form method="POST"
+                      action="{{ url_for('supprimer_module', module_id=module.id) }}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Supprimer ce module ?');">
+                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                </form>
+            </span>
+        </div>
 
-            <!-- Barre progression -->
-            <div class="progress mt-2" style="height:18px;">
-                <div class="progress-bar"
-                     role="progressbar"
-                     style="width: {{ module.pourcentage_module() }}%; background-color: {{ module.couleur_avancement() }};"
-                     aria-valuenow="{{ module.pourcentage_module() }}"
-                     aria-valuemin="0"
-                     aria-valuemax="100">
-                    {{ module.pourcentage_module() }}%
-                </div>
+        <!-- Barre progression -->
+        <div class="progress mt-2" style="height:18px;">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: {{ module.pourcentage_module() }}%; background-color: {{ module.couleur_avancement() }};"
+                 aria-valuenow="{{ module.pourcentage_module() }}"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                {{ module.pourcentage_module() }}%
             </div>
         </div>
 
@@ -111,21 +113,12 @@
                     </tr>
                 </thead>
                 <tbody>
-
                     {% for test in module.tests %}
                     <tr>
                         <td>{{ test.nom_test }}</td>
-
-                        <td>
-                            {{ test.date_prevue.strftime('%d/%m/%Y') if test.date_prevue else '-' }}
-                        </td>
-
-                        <td>
-                            {{ test.date_realisation.strftime('%d/%m/%Y') if test.date_realisation else '-' }}
-                        </td>
-
+                        <td>{{ test.date_test_estimee or '-' }}</td>
+                        <td>{{ test.date_realisation.strftime('%d/%m/%Y') if test.date_realisation else '-' }}</td>
                         <td>{{ test.testeur or '-' }}</td>
-
                         <td>
                             <span class="badge
                                 {% if test.statut == 'Non testé' %}bg-secondary
@@ -136,7 +129,6 @@
                                 {{ test.statut }}
                             </span>
                         </td>
-
                         <td>
                             <span class="badge
                                 {% if test.priorite == 'Haute' %}bg-danger
@@ -146,7 +138,6 @@
                                 {{ test.priorite }}
                             </span>
                         </td>
-
                         <td>
                             {% if test.critique == "Oui" %}
                                 <span class="badge bg-dark">Critique</span>
@@ -154,38 +145,29 @@
                                 -
                             {% endif %}
                         </td>
-
                         <td>{{ test.commentaire or '-' }}</td>
-
                         <td>
-                            <a href="{{ url_for('modifier_test', test_id=test.id) }}"
-                               class="btn btn-primary btn-sm">
+                            <a href="{{ url_for('modifier_test', test_id=test.id) }}" class="btn btn-primary btn-sm">
                                 Modifier
                             </a>
-
                             <form method="POST"
                                   action="{{ url_for('supprimer_test', test_id=test.id) }}"
                                   style="display:inline;"
                                   onsubmit="return confirm('Supprimer ce test ?');">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    Supprimer
-                                </button>
+                                <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                             </form>
                         </td>
                     </tr>
                     {% endfor %}
-
                 </tbody>
             </table>
 
-            <a href="{{ url_for('ajouter_test', module_id=module.id) }}"
-               class="btn btn-success btn-sm">
+            <a href="{{ url_for('ajouter_test', module_id=module.id) }}" class="btn btn-success btn-sm">
                 + Ajouter un test
             </a>
 
         </div>
     </div>
-
     {% else %}
     <p class="text-muted">Aucun module ajouté pour ce projet.</p>
     {% endfor %}

@@ -162,6 +162,17 @@ def ajouter_module(projet_id):
         return redirect(url_for("projet", projet_id=projet.id))
     return render_template("ajouter_module.html", projet=projet)
 
+@app.route("/modifier_module/<int:module_id>", methods=["GET", "POST"])
+def modifier_module(module_id):
+    module = Module.query.get_or_404(module_id)
+    if request.method == "POST":
+        # Récupérer le nom du module depuis le formulaire
+        module.nom = request.form.get("nom")
+        db.session.commit()
+        flash("Module modifié avec succès !", "success")
+        return redirect(url_for("projet", projet_id=module.projet.id))
+    return render_template("modifier_module.html", module=module)
+    
 @app.route("/supprimer_module/<int:module_id>", methods=["POST"])
 def supprimer_module(module_id):
     module = Module.query.get_or_404(module_id)

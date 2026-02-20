@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Module{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2>Modifier le module : {{ module.nom }}</h2>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom du module :</label>
+            <input type="text" name="nom" id="nom" class="form-control" value="{{ module.nom }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Modifier</button>
+        <a class="btn btn-secondary" href="{{ url_for('projet', projet_id=module.projet.id) }}">Retour</a>
+    </form>
+
+</div>
+{% endblock %}

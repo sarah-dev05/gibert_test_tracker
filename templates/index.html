@@ -12,7 +12,10 @@
             <tr>
                 <th>Nom du projet</th>
                 <th>Client</th>
-                <th>Date de début</th>
+                <th>Description</th>
+                <th>Responsable</th>
+                <th>Semaine prévue</th>
+                <th>Statut</th>
                 <th>Modules</th>
                 <th>Avancement</th>
                 <th>Actions</th>
@@ -22,19 +25,25 @@
             {% for projet in projets %}
             <tr>
                 <td>{{ projet.nom }}</td>
-                <td>{{ projet.client }}</td>
+                <td>{{ projet.client or '-' }}</td>
+                <td>{{ projet.description or '-' }}</td>
+                <td>{{ projet.responsable or '-' }}</td>
+                <td>{{ projet.semaine_prevue or '-' }}</td>
+                <td>{{ projet.statut }}</td>
                 <td>{{ projet.modules|length }}</td>
                 <td>
                     <div class="progress" style="height:20px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ projet.pourcentage_global() }}%;" aria-valuenow="{{ projet.pourcentage_global() }}" aria-valuemin="0" aria-valuemax="100">
-                            {{ projet.pourcentage_global() }}%
+                        <div class="progress-bar bg-success" role="progressbar"
+                             style="width: {{ projet.pourcentage_global() }}%;"
+                             aria-valuenow="{{ projet.pourcentage_global() }}"
+                             aria-valuemin="0" aria-valuemax="100">
+                             {{ projet.pourcentage_global() }}%
                         </div>
                     </div>
                 </td>
                 <td>
                     <a class="btn btn-primary btn-sm" href="{{ url_for('projet', projet_id=projet.id) }}">Voir</a>
-                    <a href="{{ url_for('modifier_projet', projet_id=projet.id) }}" class="btn btn-warning btn-sm">Modifier </a>     
-
+                    <a href="{{ url_for('modifier_projet', projet_id=projet.id) }}" class="btn btn-warning btn-sm">Modifier</a>
                     <form method="POST" action="{{ url_for('supprimer_projet', projet_id=projet.id) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce projet ?');">
                         <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
                     </form>
@@ -49,6 +58,6 @@
 </div>
 
 <footer class="text-center mt-5 mb-3 text-muted">
-    &copy; {{ now().year }} ID Logistics — Tous droits réservés | Développé  pour le suivi des tests
+    &copy; {{ now().year }} ID Logistics — Tous droits réservés | Développé pour le suivi des tests
 </footer>
 {% endblock %}

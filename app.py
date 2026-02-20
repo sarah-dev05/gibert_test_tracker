@@ -292,7 +292,6 @@ def dashboard(projet_id):
 
 # CREATION DE LA BASE AUTOMATIQUE SI NECESSAIRE
 with app.app_context():
-    db.drop_all()    # supprime toutes les tables existantes
     db.create_all()  # crée toutes les tables selon les modèles actuels
     print("Base SQLite recréée avec toutes les colonnes actuelles !")
 

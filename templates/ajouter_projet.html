@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Ajouter Projet{% endblock %}
+
+{% block content %}
+<h1>Ajouter un nouveau projet</h1>
+
+<form method="POST" class="mb-4">
+    <!-- Nom du projet -->
+    <div class="mb-3">
+        <label for="nom" class="form-label">Nom du projet :</label>
+        <input type="text" name="nom" id="nom" class="form-control" required>
+    </div>
+
+    <!-- Client -->
+    <div class="mb-3">
+        <label for="client" class="form-label">Client :</label>
+        <input type="text" name="client" id="client" class="form-control">
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+        <label for="description" class="form-label">Description :</label>
+        <textarea name="description" id="description" class="form-control"></textarea>
+    </div>
+
+    <!-- Responsable -->
+    <div class="mb-3">
+        <label for="responsable" class="form-label">Responsable :</label>
+        <input type="text" name="responsable" id="responsable" class="form-control">
+    </div>
+
+    <!-- Semaine prévue -->
+    <div class="mb-3">
+        <label for="semaine_prevue" class="form-label">Semaine prévue :</label>
+        <input type="text" name="semaine_prevue" id="semaine_prevue" class="form-control" placeholder="ex: S12">
+    </div>
+
+    <!-- Statut -->
+    <div class="mb-3">
+        <label for="statut" class="form-label">Statut :</label>
+        <select name="statut" id="statut" class="form-control">
+            <option value="En cours" selected>En cours</option>
+            <option value="Terminé">Terminé</option>
+        </select>
+    </div>
+
+    <!-- Boutons -->
+    <button type="submit" class="btn btn-success">Ajouter</button>
+    <a class="btn btn-secondary" href="{{ url_for('index') }}">Retour</a>
+</form>
+{% endblock %}

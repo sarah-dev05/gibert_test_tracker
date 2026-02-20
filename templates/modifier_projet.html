@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Modifier le projet</h2>
+
+    <form method="POST">
+        <div class="mb-3">
+            <label>Nom</label>
+            <input type="text" name="nom" class="form-control" value="{{ projet.nom }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Client</label>
+            <input type="text" name="client" class="form-control" value="{{ projet.client }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Description</label>
+            <textarea name="description" class="form-control">{{ projet.description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label>Responsable</label>
+            <input type="text" name="responsable" class="form-control" value="{{ projet.responsable }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Semaine prévue (ex: S7)</label>
+            <input type="text" name="semaine_prevue" class="form-control" value="{{ projet.semaine_prevue }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Statut</label>
+            <select name="statut" class="form-control">
+                <option value="En cours" {% if projet.statut == "En cours" %}selected{% endif %}>En cours</option>
+                <option value="Terminé" {% if projet.statut == "Terminé" %}selected{% endif %}>Terminé</option>
+                <option value="En retard" {% if projet.statut == "En retard" %}selected{% endif %}>En retard</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Modifier</button>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+
+{% endblock %}

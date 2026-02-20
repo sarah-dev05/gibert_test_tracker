@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Importer tests - {{ module.nom }}{% endblock %}
+
+{% block content %}
+<h1>Importer tests pour le module : {{ module.nom }}</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <label>Choisir un fichier CSV :</label>
+    <input type="file" name="file" accept=".csv" required><br><br>
+    <button type="submit" class="btn btn-primary">Importer</button>
+</form>
+
+<a class="btn btn-secondary mt-3" href="{{ url_for('projet_detail', projet_id=module.projet.id) }}">← Retour</a>
+{% endblock %}

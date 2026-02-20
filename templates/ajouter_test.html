@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% if test %}
+    {% set title_page = "Modifier Test : " ~ test.nom_test %}
+{% else %}
+    {% set title_page = "Ajouter un Test pour le module : " ~ module.nom %}
+{% endif %}
+
+{% block title %}{{ title_page }}{% endblock %}
+
+{% block content %}
+<h1>{{ title_page }}</h1>
+
+<form method="POST" class="mb-4">
+
+    <!-- Nom du test -->
+    <div class="mb-3">
+        <label for="nom_test" class="form-label">Nom du test :</label>
+        <input type="text" name="nom_test" id="nom_test" class="form-control"
+               value="{{ test.nom_test if test else '' }}" required>
+    </div>
+
+    <!-- Date de réalisation -->
+    <div class="mb-3">
+        <label for="date_realisation" class="form-label">Date de réalisation :</label>
+        <input type="date" name="date_realisation" id="date_realisation" class="form-control"
+               value="{{ test.date_realisation.strftime('%Y-%m-%d') if test and test.date_realisation else '' }}">
+    </div>
+
+    <!-- Date estimée (semaine) -->
+    <div class="mb-3">
+        <label for="date_test_estimee" class="form-label">Date estimée (semaine) :</label>
+        <input type="text" name="date_test_estimee" id="date_test_estimee" class="form-control"
+               placeholder="ex: S8"
+               value="{{ test.date_test_estimee if test else '' }}">
+    </div>
+
+    <!-- Testeur -->
+    <div class="mb-3">
+        <label for="testeur" class="form-label">Testeur :</label>
+        <input type="text" name="testeur" id="testeur" class="form-control"
+               value="{{ test.testeur if test else '' }}">
+    </div>
+
+    <!-- Système -->
+    <div class="mb-3">
+        <label for="systeme" class="form-label">Système :</label>
+        <input type="text" name="systeme" id="systeme" class="form-control"
+               value="{{ test.systeme if test else '' }}">
+    </div>
+
+    <!-- Statut -->
+    <div class="mb-3">
+        <label for="statut" class="form-label">Statut :</label>
+        <select name="statut" id="statut" class="form-select">
+            <option value="Non testé" {% if test and test.statut=="Non testé" %}selected{% endif %}>Non testé</option>
+            <option value="Validé" {% if test and test.statut=="Validé" %}selected{% endif %}>Validé</option>
+            <option value="En cours" {% if test and test.statut=="En cours" %}selected{% endif %}>En cours</option>
+            <option value="KO" {% if test and test.statut=="KO" %}selected{% endif %}>KO</option>
+        </select>
+    </div>
+
+    <!-- Priorité -->
+    <div class="mb-3">
+        <label for="priorite" class="form-label">Priorité :</label>
+        <select name="priorite" id="priorite" class="form-select">
+            <option value="Moyenne" {% if test and test.priorite=="Moyenne" %}selected{% endif %}>Moyenne</option>
+            <option value="Haute" {% if test and test.priorite=="Haute" %}selected{% endif %}>Haute</option>
+            <option value="Basse" {% if test and test.priorite=="Basse" %}selected{% endif %}>Basse</option>
+        </select>
+    </div>
+
+    <!-- Commentaire -->
+    <div class="mb-3">
+        <label for="commentaire" class="form-label">Commentaire :</label>
+        <textarea name="commentaire" id="commentaire" class="form-control">{{ test.commentaire if test else '' }}</textarea>
+    </div>
+
+    <!-- Boutons -->
+    <button type="submit" class="btn btn-success">Enregistrer</button>
+    <a class="btn btn-secondary" href="{{ url_for('projet', projet_id=test.module.projet.id if test else module.projet.id) }}">Retour</a>
+
+</form>
+{% endblock %}

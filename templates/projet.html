@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h1 class="mb-3">Projet : {{ projet.nom }}</h1>
+
+    <p><strong>Client :</strong> {{ projet.client }}</p>
+    <p><strong>Semaine prévue :</strong> {{ projet.semaine_prevue or '-' }}</p>
+    <p><strong>Statut :</strong> {{ projet.statut }}</p>
+
+    <!-- FILTRES TESTS -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+
+                <div class="col-md-3">
+                    <label>Testeur</label>
+                    <input type="text" name="testeur" class="form-control">
+                </div>
+
+                <div class="col-md-2">
+                    <label>Statut</label>
+                    <select name="statut" class="form-control">
+                        <option>Tous</option>
+                        <option>Non testé</option>
+                        <option>En cours</option>
+                        <option>Validé</option>
+                        <option>KO</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Priorité</label>
+                    <select name="priorite" class="form-control">
+                        <option>Tous</option>
+                        <option>Haute</option>
+                        <option>Moyenne</option>
+                        <option>Basse</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label>Critique</label>
+                    <select name="critique" class="form-control">
+                        <option>Tous</option>
+                        <option>Oui</option>
+                        <option>Non</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filtrer
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <a href="{{ url_for('ajouter_module', projet_id=projet.id) }}" class="btn btn-success btn-sm">
+            + Ajouter un module
+        </a>
+        <a href="{{ url_for('dashboard', projet_id=projet.id) }}" class="btn btn-primary btn-sm">
+            Voir Dashboard
+        </a>
+    </div>
+
+    {% for module in projet.modules %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="d-flex justify-content-between align-items-center">
+                {{ module.nom }}
+                <span>
+                    <a href="{{ url_for('supprimer_module', module_id=module.id) }}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Supprimer ce module ?');">
+                        Supprimer
+                    </a>
+                </span>
+            </h5>
+
+            <!-- Barre progression -->
+            <div class="progress mt-2" style="height:18px;">
+                <div class="progress-bar"
+                     role="progressbar"
+                     style="width: {{ module.pourcentage_module() }}%; background-color: {{ module.couleur_avancement() }};"
+                     aria-valuenow="{{ module.pourcentage_module() }}"
+                     aria-valuemin="0"
+                     aria-valuemax="100">
+                    {{ module.pourcentage_module() }}%
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <table class="table table-bordered table-striped">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nom du test</th>
+                        <th>Date prévue</th>
+                        <th>Date réalisation</th>
+                        <th>Testeur</th>
+                        <th>Statut</th>
+                        <th>Priorité</th>
+                        <th>Critique</th>
+                        <th>Commentaire</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    {% for test in module.tests %}
+                    <tr>
+                        <td>{{ test.nom_test }}</td>
+
+                        <td>
+                            {{ test.date_prevue.strftime('%d/%m/%Y') if test.date_prevue else '-' }}
+                        </td>
+
+                        <td>
+                            {{ test.date_realisation.strftime('%d/%m/%Y') if test.date_realisation else '-' }}
+                        </td>
+
+                        <td>{{ test.testeur or '-' }}</td>
+
+                        <td>
+                            <span class="badge
+                                {% if test.statut == 'Non testé' %}bg-secondary
+                                {% elif test.statut == 'En cours' %}bg-warning
+                                {% elif test.statut == 'KO' %}bg-danger
+                                {% elif test.statut == 'Validé' %}bg-success
+                                {% endif %}">
+                                {{ test.statut }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class="badge
+                                {% if test.priorite == 'Haute' %}bg-danger
+                                {% elif test.priorite == 'Moyenne' %}bg-warning
+                                {% else %}bg-info
+                                {% endif %}">
+                                {{ test.priorite }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if test.critique == "Oui" %}
+                                <span class="badge bg-dark">Critique</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>{{ test.commentaire or '-' }}</td>
+
+                        <td>
+                            <a href="{{ url_for('modifier_test', test_id=test.id) }}"
+                               class="btn btn-primary btn-sm">
+                                Modifier
+                            </a>
+
+                            <form method="POST"
+                                  action="{{ url_for('supprimer_test', test_id=test.id) }}"
+                                  style="display:inline;"
+                                  onsubmit="return confirm('Supprimer ce test ?');">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    Supprimer
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+            <a href="{{ url_for('ajouter_test', module_id=module.id) }}"
+               class="btn btn-success btn-sm">
+                + Ajouter un test
+            </a>
+
+        </div>
+    </div>
+
+    {% else %}
+    <p class="text-muted">Aucun module ajouté pour ce projet.</p>
+    {% endfor %}
+
+</div>
+{% endblock %}

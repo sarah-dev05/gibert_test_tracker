@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Dashboard Premium - {{ projet.nom }}{% endblock %}
+{% block title %}Dashboard - {{ projet.nom }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
 
-    <h1 class="mb-4">Dashboard Premium : {{ projet.nom }}</h1>
+    <h1 class="mb-4">Dashboard : {{ projet.nom }}</h1>
 
     <div class="mb-3 d-flex gap-2">
         <a class="btn btn-secondary" href="{{ url_for('index') }}">← Retour aux projets</a>
         <a class="btn btn-primary" href="{{ url_for('liste_tests', projet_id=projet.id) }}">Voir tous les tests</a>
     </div>
 
-    <!-- KPI Cards -->
+    <!-- KPI -->
     <div class="row mb-4">
         <div class="col-md-2">
             <div class="card text-white bg-dark mb-3">
@@ -21,6 +21,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-2">
             <div class="card text-white bg-success mb-3">
                 <div class="card-body text-center">
@@ -29,6 +30,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-2">
             <div class="card text-white bg-warning mb-3">
                 <div class="card-body text-center">
@@ -37,6 +39,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-2">
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body text-center">
@@ -45,6 +48,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-2">
             <div class="card text-white bg-danger mb-3">
                 <div class="card-body text-center">
@@ -53,6 +57,7 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-2">
             <div class="card text-white bg-info mb-3">
                 <div class="card-body text-center">
@@ -63,12 +68,13 @@
         </div>
     </div>
 
-    <!-- Progression Globale -->
+    <!-- Progression globale -->
     <div class="card mb-4">
         <div class="card-body">
             <h5>Avancement global : {{ pourcentage_global }}%</h5>
             <div class="progress" style="height:25px;">
-                <div class="progress-bar" role="progressbar"
+                <div class="progress-bar bg-primary"
+                     role="progressbar"
                      style="width: {{ pourcentage_global }}%;"
                      aria-valuenow="{{ pourcentage_global }}"
                      aria-valuemin="0"
@@ -79,102 +85,55 @@
         </div>
     </div>
 
-    <!-- Filtrage rapide -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Filtres</h5>
-            <form method="GET" class="row g-2">
-                <div class="col-md-3">
-                    <select class="form-select" name="module">
-                        <option value="">Tous les modules</option>
-                        {% for m in projet.modules %}
-                        <option value="{{ m.id }}" {% if request.args.get('module')|int == m.id %}selected{% endif %}>{{ m.nom }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="statut">
-                        <option value="">Tous statuts</option>
-                        <option value="Validé" {% if request.args.get('statut')=='Validé' %}selected{% endif %}>Validé</option>
-                        <option value="En cours" {% if request.args.get('statut')=='En cours' %}selected{% endif %}>En cours</option>
-                        <option value="KO" {% if request.args.get('statut')=='KO' %}selected{% endif %}>KO</option>
-                        <option value="Non testé" {% if request.args.get('statut')=='Non testé' %}selected{% endif %}>Non testé</option>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="testeur">
-                        <option value="">Tous testeurs</option>
-                        {% for t in testeurs %}
-                        <option value="{{ t }}" {% if request.args.get('testeur')==t %}selected{% endif %}>{{ t }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Graphiques camembert -->
+    <!-- Graphiques -->
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Répartition par statut</h5>
+                    <h5 class="text-center">Répartition par statut</h5>
                     <canvas id="pieStatus"></canvas>
                 </div>
             </div>
         </div>
+
         <div class="col-md-6 mb-4">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Répartition des modules</h5>
+                    <h5 class="text-center">Répartition par module</h5>
                     <canvas id="pieModules"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Historique simplifié -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <h5>Dernières modifications</h5>
-            <ul>
-                {% for h in historique %}
-                <li>{{ h.date.strftime('%d/%m/%Y %H:%M') }} - {{ h.action }} : {{ h.detail }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div>
-
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 const ctxStatus = document.getElementById('pieStatus').getContext('2d');
-const pieStatus = new Chart(ctxStatus, {
+new Chart(ctxStatus, {
     type: 'pie',
     data: {
         labels: ['Validé', 'En cours', 'KO', 'Non testé'],
         datasets: [{
             data: [{{ valides }}, {{ en_cours }}, {{ ko }}, {{ non_testes }}],
             backgroundColor: [
-                'rgba(40, 167, 69, 0.7)',
-                'rgba(255, 193, 7, 0.7)',
-                'rgba(220, 53, 69, 0.7)',
-                'rgba(108, 117, 125, 0.7)'
-            ],
-            borderColor: 'rgba(255, 255, 255, 1)',
-            borderWidth: 2
+                '#28a745',
+                '#ffc107',
+                '#dc3545',
+                '#6c757d'
+            ]
         }]
     },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
 });
 
 const ctxModules = document.getElementById('pieModules').getContext('2d');
-const pieModules = new Chart(ctxModules, {
+new Chart(ctxModules, {
     type: 'pie',
     data: {
         labels: [{% for m in stats_modules %}'{{ m.nom }}',{% endfor %}],
@@ -182,14 +141,16 @@ const pieModules = new Chart(ctxModules, {
             data: [{% for m in stats_modules %}{{ m.total }},{% endfor %}],
             backgroundColor: [
                 {% for m in stats_modules %}
-                'rgba({{ (loop.index0*50) % 255 }}, {{ (loop.index0*80) % 255 }}, {{ (loop.index0*120) % 255 }}, 0.7)',
+                'hsl({{ loop.index0 * 60 }}, 70%, 60%)',
                 {% endfor %}
-            ],
-            borderColor: 'rgba(255, 255, 255, 1)',
-            borderWidth: 2
+            ]
         }]
     },
-    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+    }
 });
 </script>
+
 {% endblock %}
